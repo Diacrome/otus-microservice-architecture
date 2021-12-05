@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hw2
+  labels:
+    app: hw2
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: hw2
+  template:
+    metadata:
+      labels:
+        app: hw2
+    spec:
+      containers:
+        - name: hw2-container
+          image: "diacrome/python-flask-postgres:0.5"
+          ports:
+            - containerPort: 8000
