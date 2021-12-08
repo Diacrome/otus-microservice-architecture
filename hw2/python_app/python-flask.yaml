@@ -16,6 +16,12 @@ spec:
     spec:
       containers:
         - name: hw2-container
-          image: "diacrome/python-flask-postgres:0.5"
+          image: diacrome/python-flask-postgres:0.18
           ports:
             - containerPort: 8000
+          env:
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: hw2-config
+                  key: databaseUrl

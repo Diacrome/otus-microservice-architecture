@@ -3,7 +3,7 @@
 ### Запуск
 Из папки hw1 применить команду
 
-`kubectl apply -f . && kubectl apply -f ./secrets -n hw2  && kubectl apply -f ./entities -n hw2`
+`kubectl apply -f . && kubectl apply -f ./secrets -n hw2 && kubectl apply -f ./db -n hw2 && kubectl apply -f ./config -n hw2 && kubectl apply -f ./python_app -n hw2`
 
 Для проверки url выполнить команду:
 

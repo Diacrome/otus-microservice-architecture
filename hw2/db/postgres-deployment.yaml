@@ -23,12 +23,12 @@ spec:
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
-                  name: postgres-secret
+                  name: hw2-secret
                   key: postgres-root-username
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: postgres-secret
+                  name: hw2-secret
                   key: postgres-root-password
             - name: POSTGRES_DB
               value: hw2
