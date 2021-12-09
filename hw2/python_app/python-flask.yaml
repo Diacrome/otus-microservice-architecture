@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: hw2-container
-          image: diacrome/python-flask-postgres:0.18
+          image: diacrome/python-flask-postgres:0.19
           ports:
             - containerPort: 8000
           env:
