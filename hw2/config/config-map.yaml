@@ -3,4 +3,4 @@ kind: ConfigMap
 metadata:
   name: hw2-config
 data:
-  databaseUrl: postgresdb-service
+  databaseUrl: service-postgresql
