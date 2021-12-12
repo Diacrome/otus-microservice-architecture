@@ -12,9 +12,9 @@ kubectl apply -f ./config -n hw2 &&
 kubectl apply -f ./python_app -n hw2
 ```
 
-Для проверки url выполнить команду:
+Для проверки CRUD выполнить команду:
 
-`curl  http://arch.homework/health && curl http://arch.homework/otusapp/sergey/volkov`
+`newman run ./test/hw2.postman_collection.json`
 
 ### Задание 
 Цель:
@@ -43,6 +43,7 @@ Ingress-ы должны также вести на url arch.homework/ (как и
 команда применения первоначальных миграций
 
 команда kubectl apply -f, которая запускает в правильном порядке манифесты кубернетеса
+
 Postman коллекция, в которой будут представлены примеры запросов к сервису на создание, получение, изменение и удаление пользователя. Важно: в postman коллекции использовать базовый url - arch.homework.
 
 Задание со звездочкой:
