@@ -38,3 +38,6 @@ url, по которому можно будет получить ответ о�
 
 Проверить что в minikube есть ingress:
 `minikube addons enable ingress`
+
+### Ссылки
+Докер образ сделан по гайду https://nodejs.org/en/docs/guides/nodejs-docker-webapp/
