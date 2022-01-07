@@ -22,15 +22,18 @@ kubectl apply -f ./entities -n hw4 &&
 kubectl apply -f ./istio-rules -n hw4
 ```
 
-Посмотреть график в kiali из папки с Istio:
-
-`istioctl dashboard kiali`
-
 Для проверки выполнить команду:
 
 ```
 for i in `seq 1 100`; do curl http://$(minikube ip):31317/health; done
 ```
+
+Посмотреть график в kiali из папки с Istio:
+
+`istioctl dashboard kiali`
+
+Изображение:
+![Kiali graph](hw4_s.volkov.png)
 
 ### Задание 
 Развернуть Minikube
