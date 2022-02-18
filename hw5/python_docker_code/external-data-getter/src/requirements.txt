@@ -4,3 +4,4 @@ flask-marshmallow == 0.12.0
 marshmallow-sqlalchemy == 0.24.2
 psycopg2 == 2.9.2
 kubernetes == 20.13.0
+timeloop = 1.0.2
