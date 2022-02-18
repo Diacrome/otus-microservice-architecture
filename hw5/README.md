@@ -1,7 +1,11 @@
 ## Домашнее задание №2
 
 ### Запуск
-Из папки bondiana применить команду
+Проверить что в minikube есть ingress:
+
+`minikube addons enable ingress`
+
+Из папки hw5 применить команду
 
 ```
 kubectl apply -f . &&
