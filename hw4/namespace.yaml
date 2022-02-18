@@ -4,3 +4,4 @@ metadata:
   name: hw4
   labels:
     name: hw4
+    istio-injection: enabled

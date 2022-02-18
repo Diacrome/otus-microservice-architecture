@@ -1,0 +1,23 @@
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  namespace: bondiana
+  name: role-secret-access
+rules:
+  - apiGroups: [""]
+    resources: ["secrets", "configmaps"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: role-secret-binding
+  namespace: bondiana
+subjects:
+  - kind: ServiceAccount
+    name: default
+    namespace: bondiana
+roleRef:
+  kind: Role
+  name: role-secret-access
+  apiGroup: rbac.authorization.k8s.io

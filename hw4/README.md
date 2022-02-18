@@ -8,7 +8,10 @@ Minikube надо запускать с Virtualbox. Замените на сво
 
 
 Установить Istio из папки со скачанной программой:
+Добавить путь в систему:
+`export PATH=$PWD/bin:$PATH`
 
+Установить:
 `istioctl install --set profile=demo -y`
 
 Из папки `hw4` применить команду:
@@ -25,7 +28,7 @@ kubectl apply -f ./istio-rules -n hw4
 Для проверки выполнить команду:
 
 ```
-for i in `seq 1 100`; do curl http://$(minikube ip):31317/health; done
+**for i in `seq 1 100`; do curl http://$(minikube ip):31317/health; done**
 ```
 
 Посмотреть график в kiali из папки с Istio:

@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bondiana
+  labels:
+    app: bondiana
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: bondiana
+  template:
+    metadata:
+      labels:
+        app: bondiana
+    spec:
+      containers:
+        - name: bondiana-container
+          image: diacrome/bondiana:0.2
+          ports:
+            - containerPort: 8000
+          env:
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: bondiana-config
+                  key: databaseUrl
