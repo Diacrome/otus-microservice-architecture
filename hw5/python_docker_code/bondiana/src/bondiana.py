@@ -41,7 +41,7 @@ class Bond(db.Model):
     prev_wap_price = db.Column(db.Numeric(8, 2))  # ??
     yield_at_prev_wap_price = db.Column(db.Numeric(8, 2))
     prev_price = db.Column(db.Numeric(8, 2))  # проверить этот или prev_wap_price нужен
-    face_value = db.Column(db.Numeric(8, 2))
+    face_value = db.Column(db.Numeric(12, 2))
     mat_date = db.Column(db.Date)
     sec_name = db.Column(db.String(100))
     currency_id = db.Column(db.String(10))

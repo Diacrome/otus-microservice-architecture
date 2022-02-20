@@ -1,14 +1,13 @@
 import base64
+import logging
+import time
 import requests
 
 from kubernetes import client, config
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
-from timeloop import Timeloop
-from datetime import timedelta
 
-t1 = Timeloop()
 db = SQLAlchemy()
 
 config.load_incluster_config()
@@ -44,7 +43,7 @@ class Bond(db.Model):
     prev_wap_price = db.Column(db.Numeric(8, 2))
     yield_at_prev_wap_price = db.Column(db.Numeric(8, 2))
     prev_price = db.Column(db.Numeric(8, 2))
-    face_value = db.Column(db.Numeric(8, 2))
+    face_value = db.Column(db.Numeric(12, 2))
     mat_date = db.Column(db.Date)
     sec_name = db.Column(db.String(100))
     currency_id = db.Column(db.String(10))
@@ -97,7 +96,6 @@ bond_schema = BondSchema()
 
 
 # Update bond data
-@t1.job(interval=timedelta(seconds=100))
 def get_moex_bond_data():
     url = "https://iss.moex.com/iss/engines/stock/markets/bonds/boardgroups/58/securities.json"
     response_fields = 'SECID,SHORTNAME,PREVWAPRICE,YIELDATPREVWAPRICE,PREVPRICE,FACEVALUE,MATDATE,SECNAME,CURRENCYID,' \
@@ -114,18 +112,23 @@ def get_moex_bond_data():
     if bonds_plane_data:
         for bond_plane in bonds_plane_data:
             bond = Bond(bond_plane[0], bond_plane[1], bond_plane[2], bond_plane[3], bond_plane[4], bond_plane[5],
-                        bond_plane[6], bond_plane[7], bond_plane[8], bond_plane[9], bond_plane[11])
-            update_bond(bond)
-            print('updating bond:' + bond_plane)
+                        None if bond_plane[6] == "0000-00-00" else bond_plane[6],
+                        bond_plane[7], bond_plane[8], bond_plane[9], bond_plane[10])
+            try:
+                update_bond(bond)
+            except Exception as e:
+                logging.exception(e, exc_info=True)
     else:
         app.logger.error('No bond data received')
 
 
 def update_bond(new_bond):
-    db_bond = Bond.query.filter_by(sec_id=new_bond.sec_id)
-    if db_bond is None:
+    bond_exists = db.session.query(Bond.id).filter_by(sec_id=new_bond.sec_id).first()
+    if bond_exists is None:
         db.session.add(new_bond)
+        db.session.commit()
         return
+    db_bond = Bond.query.filter_by(sec_id=new_bond.sec_id)
     if new_bond == db_bond:
         return
     db_bond.sec_id = new_bond.sec_id
@@ -141,3 +144,7 @@ def update_bond(new_bond):
     db_bond.offer_date = new_bond.offer_date
     db.session.commit()
 
+
+while True:
+    get_moex_bond_data()
+    time.sleep(100)
