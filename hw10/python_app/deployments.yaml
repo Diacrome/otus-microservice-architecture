@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hw10-api
+  labels:
+    app: hw10-api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: hw10-api
+  template:
+    metadata:
+      labels:
+        app: hw10-api
+    spec:
+      containers:
+        - name: hw10-api-container
+          image: diacrome/hw10-api:0.1
+          ports:
+            - containerPort: 8000
+          env:
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: hw10-config
+                  key: databaseUrl
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hw10-business-logic-app
+  labels:
+    app: hw10-business-logic-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hw10-business-logic-app
+  template:
+    metadata:
+      labels:
+        app: hw10-business-logic-app
+    spec:
+      containers:
+        - name: hw10-business-logic-app-container
+          image: diacrome/hw10-business-logic-app:0.1
+          ports:
+            - containerPort: 8001
+          env:
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: hw10-config
+                  key: databaseUrl
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hw10-transaction-controller
+  labels:
+    app: hw10-transaction-controller
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hw10-transaction-controller
+  template:
+    metadata:
+      labels:
+        app: hw10-transaction-controller
+    spec:
+      containers:
+        - name: hw10-transaction-controller-container
+          image: diacrome/hw10-transaction-controller:0.1
+          ports:
+            - containerPort: 8002
+          env:
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: hw10-config
+                  key: databaseUrl

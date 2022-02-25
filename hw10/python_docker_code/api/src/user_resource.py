@@ -1,3 +1,4 @@
+import requests
 from kubernetes import client, config
 
 from flask import Flask, request, jsonify
@@ -73,13 +74,12 @@ def add_user():
     return user_schema.jsonify(new_user)
 
 
-# Get Single User
+# Get Single User balance
 
 
 @app.route('/user/<id>', methods=['GET'])
 def get_user(id):
-    user = User.query.get(id)
-    return user_schema.jsonify(user)
+    return requests.get("http://transaction-controller:8002/user/balance/" + id)
 
 
 @app.route("/")
