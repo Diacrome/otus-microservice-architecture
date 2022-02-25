@@ -17,22 +17,25 @@ db_password = base64.b64decode(secret['postgres-root-password']).decode('utf-8')
 config_map = v1.read_namespaced_config_map("hw10-config", "hw10").data
 db_host = config_map['databaseUrl']
 
+
 def create_app(db_user, db_password, db_host):
     app = Flask(__name__)
     app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{db_user}:{db_password}@{db_host}/hw10'
     db.init_app(app)
     return app
 
-app=create_app(db_user, db_password, db_host)
+
+app = create_app(db_user, db_password, db_host)
 app.app_context().push()
 
-
 ma = Marshmallow(app)
+
 
 # User Class/Model
 
 
 class User(db.Model):
+    __tablename__ = 'user_data'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), unique=True)
     balance = db.Column(db.Integer)
@@ -40,6 +43,7 @@ class User(db.Model):
     def __init__(self, name, balance):
         self.name = name
         self.balance = balance
+
 
 # User Schema
 
@@ -51,6 +55,7 @@ class UserSchema(ma.Schema):
 
 # Init schema
 user_schema = UserSchema()
+
 
 # Create a User
 
@@ -67,6 +72,7 @@ def add_user():
 
     return user_schema.jsonify(new_user)
 
+
 # Get Single User
 
 
@@ -78,4 +84,4 @@ def get_user(id):
 
 @app.route("/")
 def hello_world():
-    return "<p>It is alive!</p>"
+    return "<p>user resource is alive!</p>"
