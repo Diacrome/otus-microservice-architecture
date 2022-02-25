@@ -9,6 +9,6 @@ RUN apk add postgresql-dev
 RUN pip3 install -r requirements.txt
 
 COPY ./src/ /app/
-ENV FLASK_APP=product_resource.py
+ENV FLASK_APP=user_resource.py
 
 CMD flask run -h 0.0.0 -p 8000
