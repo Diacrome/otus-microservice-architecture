@@ -49,7 +49,7 @@ class User(db.Model):
 class Transaction(db.Model):
     __tablename__ = 'transaction_data'
     id = db.Column(db.Integer, primary_key=True)
-    user_data_id = db.Column(db.Integer, db.Foreignkey('user_data.id'))
+    user_data_id = db.Column(db.Integer)
     product_name = db.Column(db.String(100))
     balance_change = db.Column(db.Integer)
     payment = db.Column(db.Boolean)

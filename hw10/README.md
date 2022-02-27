@@ -1,6 +1,11 @@
 ## Домашнее задание №2
 
 ### Запуск
+
+Проверить что в minikube есть ingress:
+
+`minikube addons enable ingress`
+
 Из папки hw10 применить команду
 
 ```
