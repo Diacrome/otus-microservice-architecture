@@ -45,15 +45,9 @@ spec:
     spec:
       containers:
         - name: hw10-business-logic-app-container
-          image: diacrome/hw10-business-logic-app:0.2
+          image: diacrome/hw10-business-logic-app:0.5
           ports:
             - containerPort: 8001
-          env:
-            - name: DB_HOST
-              valueFrom:
-                configMapKeyRef:
-                  name: hw10-config
-                  key: databaseUrl
 
 ---
 apiVersion: apps/v1
@@ -74,7 +68,7 @@ spec:
     spec:
       containers:
         - name: hw10-transaction-controller-container
-          image: diacrome/hw10-transaction-controller:0.4
+          image: diacrome/hw10-transaction-controller:0.6
           ports:
             - containerPort: 8002
           env:

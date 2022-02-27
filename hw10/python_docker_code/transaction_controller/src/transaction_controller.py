@@ -100,24 +100,28 @@ def add_user():
     if new_balance < 0:
         transaction = Transaction(user_data_id, product_name, balance_change, False, None, None)
         db.session.add(transaction)
+        db.session.commit()
         return jsonify({'failed': 'Not enough balance'})
 
-    warehouse_request = requests.get("http://logic:8001/warehouse/" + warehouse_id)
+    warehouse_request = requests.get("http://logic:8001/warehouse/" + str(warehouse_id))
     warehouse_available = warehouse_request.json().get('warehouse_available')
     if not warehouse_available:
         transaction = Transaction(user_data_id, product_name, balance_change, True, False, None)
         db.session.add(transaction)
+        db.session.commit()
         return jsonify({'failed': 'Warehouse is empty'})
 
-    delivery_request = requests.get("http://logic:8001/delivery/" + delivery_hour)
+    delivery_request = requests.get("http://logic:8001/delivery/" + str(delivery_hour))
     delivery_available = delivery_request.json().get('delivery_available')
     if not delivery_available:
         transaction = Transaction(user_data_id, product_name, balance_change, True, True, False)
         db.session.add(transaction)
+        db.session.commit()
         return jsonify({'failed': 'No courier is available'})
 
     transaction = Transaction(user_data_id, product_name, balance_change, True, True, True)
     db.session.add(transaction)
+    db.session.commit()
 
     return jsonify({'success': 'Transaction created'})
 

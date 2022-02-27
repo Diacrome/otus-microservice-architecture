@@ -1,0 +1,477 @@
+{
+	"info": {
+		"_postman_id": "80188431-3330-47b5-9144-07ed512f6d9d",
+		"name": "otus_arch_hw10",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create user with balance",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"testName\",\n    \"balance\": 110\n}"
+				},
+				"url": {
+					"raw": "http://{{baseUrl}}/user",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Buy successfuly",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var responseJSON = JSON.parse(responseBody)",
+							"if (responseJSON[\"success\"] === \"Transaction created\") {",
+							"    console.info(\"Bought successful\")",
+							"} else {",
+							"    pm.expect.fail(\"Should buy on good parameters\")",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"product_name\": \"testProductName\",\n    \"balance_change\": -10,\n    \"warehouse_id\": 1,\n    \"delivery_hour\": 1\n}"
+				},
+				"url": {
+					"raw": "http://{{baseUrl}}/buy/user/{{userId}}",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"buy",
+						"user",
+						"{{userId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get user balance",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var responseJSON = JSON.parse(responseBody)",
+							"if (responseJSON[\"balance\"] == 100) {",
+							"    console.info(\"Balance is changed and equals 100\")",
+							"} else {",
+							"    pm.expect.fail(\"Balance shoud remain the same 100\")",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{baseUrl}}/user/{{userId}}",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"user",
+						"{{userId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Buy too expensive product",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var responseJSON = JSON.parse(responseBody)",
+							"if (responseJSON[\"failed\"] === \"Not enough balance\") {",
+							"    console.info(\"Buying too expensive product failed as expected\")",
+							"} else {",
+							"    pm.expect.fail(\"Bought too expencive!\")",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"product_name\": \"testProductName\",\n    \"balance_change\": -200,\n    \"warehouse_id\": 1,\n    \"delivery_hour\": 1\n}"
+				},
+				"url": {
+					"raw": "http://{{baseUrl}}/buy/user/{{userId}}",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"buy",
+						"user",
+						"{{userId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get user balance 2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var responseJSON = JSON.parse(responseBody)",
+							"if (responseJSON[\"balance\"] == 100) {",
+							"    console.info(\"Balance is not changed and equals 100\")",
+							"} else {",
+							"    pm.expect.fail(\"Balance shoud remain the same 100\")",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{baseUrl}}/user/{{userId}}",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"user",
+						"{{userId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Buy at wrong warehouse",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var responseJSON = JSON.parse(responseBody)",
+							"if (responseJSON[\"failed\"] === \"Warehouse is empty\") {",
+							"    console.info(\"Buying at wrong warehouse failed as expected\")",
+							"} else {",
+							"    pm.expect.fail(\"Bought too expencive!\")",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"product_name\": \"testProductName\",\n    \"balance_change\": -10,\n    \"warehouse_id\": 100,\n    \"delivery_hour\": 1\n}"
+				},
+				"url": {
+					"raw": "http://{{baseUrl}}/buy/user/{{userId}}",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"buy",
+						"user",
+						"{{userId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get user balance 3",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var responseJSON = JSON.parse(responseBody)",
+							"if (responseJSON[\"balance\"] == 100) {",
+							"    console.info(\"Balance is not changed and equals 100\")",
+							"} else {",
+							"    pm.expect.fail(\"Balance shoud remain the same 100\")",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{baseUrl}}/user/{{userId}}",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"user",
+						"{{userId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Buy with wrong delivery time",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var responseJSON = JSON.parse(responseBody)",
+							"if (responseJSON[\"failed\"] === \"No courier is available\") {",
+							"    console.info(\"Delivery at wrong hour failed as expected\")",
+							"} else {",
+							"    pm.expect.fail(\"Delivery set at wrong time!\")",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"product_name\": \"testProductName\",\n    \"balance_change\": -10,\n    \"warehouse_id\": 1,\n    \"delivery_hour\": 23\n}"
+				},
+				"url": {
+					"raw": "http://{{baseUrl}}/buy/user/{{userId}}",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"buy",
+						"user",
+						"{{userId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get user balance 4",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var responseJSON = JSON.parse(responseBody)",
+							"if (responseJSON[\"balance\"] == 100) {",
+							"    console.info(\"Balance is not changed and equals 100\")",
+							"} else {",
+							"    pm.expect.fail(\"Balance shoud remain the same 100\")",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{baseUrl}}/user/{{userId}}",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"user",
+						"{{userId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Buy successfuly again",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var responseJSON = JSON.parse(responseBody)",
+							"if (responseJSON[\"success\"] === \"Transaction created\") {",
+							"    console.info(\"Bought successful\")",
+							"} else {",
+							"    pm.expect.fail(\"Should complete with normal parameters!\")",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"product_name\": \"testProductName\",\n    \"balance_change\": -10,\n    \"warehouse_id\": 1,\n    \"delivery_hour\": 1\n}"
+				},
+				"url": {
+					"raw": "http://{{baseUrl}}/buy/user/{{userId}}",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"buy",
+						"user",
+						"{{userId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get user balance 5",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var responseJSON = JSON.parse(responseBody)",
+							"if (responseJSON[\"balance\"] == 90) {",
+							"    console.info(\"Balance is count only succesfull transactions and equals 90\")",
+							"} else {",
+							"    pm.expect.fail(\"Balance shoud remain the same 100\")",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{baseUrl}}/user/{{userId}}",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"user",
+						"{{userId}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"var responseJSON = JSON.parse(responseBody)",
+					"if (responseJSON[\"id\"] !== undefined) {",
+					"  pm.collectionVariables.set(\"userId\", responseJSON[\"id\"])",
+					"}"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "arch.homework",
+			"type": "string"
+		},
+		{
+			"key": "userId",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
