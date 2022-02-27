@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: hw10-api-container
-          image: diacrome/hw10-api:0.2
+          image: diacrome/hw10-api:0.7
           ports:
             - containerPort: 8000
           env:
@@ -74,7 +74,7 @@ spec:
     spec:
       containers:
         - name: hw10-transaction-controller-container
-          image: diacrome/hw10-transaction-controller:0.2
+          image: diacrome/hw10-transaction-controller:0.4
           ports:
             - containerPort: 8002
           env:

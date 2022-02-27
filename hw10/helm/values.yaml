@@ -214,7 +214,7 @@ primaryAsStandBy:
 
 initdbScripts:
   init.sql: |
-    CREATE TABLE IF NOT EXISTS product (id serial PRIMARY KEY, name VARCHAR ( 100 ) UNIQUE, description VARCHAR ( 200 ) UNIQUE );
+    CREATE TABLE IF NOT EXISTS user_data (id INT GENERATED ALWAYS AS IDENTITY UNIQUE, name VARCHAR (100), balance INT);CREATE TABLE IF NOT EXISTS transaction_data (id INT GENERATED ALWAYS AS IDENTITY, user_data_id INT, product_name  VARCHAR ( 100 ), balance_change INT, payment BOOLEAN, store BOOLEAN, delivery BOOLEAN, CONSTRAINT fk_user_data FOREIGN KEY(user_data_id) REFERENCES user_data(id));
 
 audit:
   ## @param audit.logHostname Log client hostnames

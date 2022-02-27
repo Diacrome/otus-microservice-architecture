@@ -1,3 +1,5 @@
+import json
+
 import requests
 from kubernetes import client, config
 
@@ -79,8 +81,23 @@ def add_user():
 
 @app.route('/user/<id>', methods=['GET'])
 def get_user(id):
-    return requests.get("http://transaction-controller:8002/user/balance/" + id)
+    r = requests.get("http://transaction-controller:8002/user/balance/" + id)
+    return r.json()
 
+
+@app.route('/buy/user/<id>', methods=['POST'])
+def buy_product(id):
+    url = 'http://transaction-controller:8002/buy'
+    headers = {'Content-Type': 'application/json'}
+    data = {
+              'user_data_id': id,
+              'product_name': request.json['product_name'],
+              'balance_change': request.json['balance_change'],
+              'warehouse_id': request.json['warehouse_id'],
+              'delivery_hour': request.json['delivery_hour']
+              }
+    r = requests.post(url=url, data=json.dumps(data), headers=headers)
+    return r.json()
 
 @app.route("/")
 def hello_world():

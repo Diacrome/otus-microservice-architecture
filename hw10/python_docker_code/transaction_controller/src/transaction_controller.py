@@ -46,6 +46,16 @@ class User(db.Model):
         self.balance = balance
 
 
+# User Schema
+class UserSchema(ma.Schema):
+    class Meta:
+        fields = ('id', 'name', 'balance')
+
+
+# Init schema
+user_schema = UserSchema()
+
+
 class Transaction(db.Model):
     __tablename__ = 'transaction_data'
     id = db.Column(db.Integer, primary_key=True)
@@ -65,16 +75,14 @@ class Transaction(db.Model):
         self.delivery = delivery
 
 
-    # User Schema
-
-
-class UserSchema(ma.Schema):
+# Transaction Schema
+class TransactionSchema(ma.Schema):
     class Meta:
-        fields = ('id', 'name', 'balance')
+        fields = ('id', 'user_data_id', 'product_name', 'balance_change', 'payment', 'store', 'delivery')
 
 
 # Init schema
-user_schema = UserSchema()
+TransactionSchema_schema = TransactionSchema()
 
 
 # buy a product
@@ -126,7 +134,7 @@ def get_user(id):
 def calculate_balance(user_id, user=None):
     if user is None:
         user = User.query.get(user_id)
-    transactions = db.query(Transaction).filter_by(user_data_id=user_id).all()
+    transactions = Transaction.query.filter_by(user_data_id=user_id).all()
     success_transactions = \
         filter(lambda t: (t.payment is True and t.store is True and t.delivery is True), transactions)
     sum_success_transactions = sum([t.balance_change for t in success_transactions])
