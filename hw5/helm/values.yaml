@@ -214,7 +214,7 @@ primaryAsStandBy:
 
 initdbScripts:
   init.sql: |
-    CREATE TABLE IF NOT EXISTS bond (id serial PRIMARY KEY, sec_id VARCHAR (100) UNIQUE, short_name VARCHAR(100), prev_wap_price NUMERIC(8,2), yield_at_prev_wap_price NUMERIC(8,2), prev_price NUMERIC(8,2), face_value NUMERIC(12,2), mat_date DATE, sec_name VARCHAR(100), currency_id VARCHAR(10), list_level NUMERIC, offer_date DATE);
+    CREATE TABLE IF NOT EXISTS bond (id serial PRIMARY KEY, sec_id VARCHAR (100) UNIQUE, short_name VARCHAR(100), prev_wap_price NUMERIC(8,2), yield_at_prev_wap_price NUMERIC(8,2), prev_price NUMERIC(8,2), face_value NUMERIC(12,2), mat_date DATE, sec_name VARCHAR(100), currency_id VARCHAR(10), list_level NUMERIC, offer_date DATE);CREATE TABLE IF NOT EXISTS token (id serial PRIMARY KEY, token VARCHAR (500) UNIQUE, risk NUMERIC, offer Boolean);
 
 audit:
   ## @param audit.logHostname Log client hostnames

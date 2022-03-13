@@ -102,7 +102,11 @@ def get_moex_bond_data():
                       'LISTLEVEL,OFFERDATE'
     params = {'iss.meta': 'off', 'iss.only': 'securities',
               'securities.columns': response_fields}
-    r = requests.get(url=url, params=params)
+    try:
+        r = requests.get(url=url, params=params)
+    except ConnectionError:
+        app.logger.log('Failed to connect to MOEX')
+        return
 
     data = r.json()
     securities = data.get('securities')

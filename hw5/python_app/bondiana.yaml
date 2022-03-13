@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: bondiana-container
-          image: diacrome/bondiana2:0.15
+          image: diacrome/bondiana:0.4
           ports:
             - containerPort: 8000
           env:
@@ -45,7 +45,7 @@ spec:
     spec:
       containers:
         - name: external-data-getter-container
-          image: diacrome/moex-bonds:0.14
+          image: diacrome/moex-bonds:0.15
           ports:
             - containerPort: 8001
           env:
