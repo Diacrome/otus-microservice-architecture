@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: bondiana-container
-          image: diacrome/bondiana:0.4
+          image: diacrome/bondiana:0.7
           ports:
             - containerPort: 8000
           env:
@@ -45,9 +45,38 @@ spec:
     spec:
       containers:
         - name: external-data-getter-container
-          image: diacrome/moex-bonds:0.15
+          image: diacrome/moex-bonds:0.16
           ports:
             - containerPort: 8001
+          env:
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: bondiana-config
+                  key: databaseUrl
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notifier
+  labels:
+    app: notifier
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: notifier
+  template:
+    metadata:
+      labels:
+        app: notifier
+    spec:
+      containers:
+        - name: notifier
+          image: diacrome/bondiana-notifier:0.2
+          ports:
+            - containerPort: 8002
           env:
             - name: DB_HOST
               valueFrom:

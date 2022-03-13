@@ -1,7 +1,7 @@
 import base64
-import logging
 import time
 import requests
+from operator import attrgetter
 
 from kubernetes import client, config
 from flask import Flask, request, jsonify
@@ -18,6 +18,7 @@ db_user = base64.b64decode(secret['postgres-root-username']).decode('utf-8')
 db_password = base64.b64decode(secret['postgres-root-password']).decode('utf-8')
 config_map = v1.read_namespaced_config_map("bondiana-config", "bondiana").data
 db_host = config_map['databaseUrl']
+bot_token = base64.b64decode(secret['telegram']).decode('utf-8')
 
 
 def create_app(db_user, db_password, db_host):
@@ -96,59 +97,41 @@ bond_schema = BondSchema()
 
 
 # Update bond data
-def get_moex_bond_data():
-    url = "https://iss.moex.com/iss/engines/stock/markets/bonds/boardgroups/58/securities.json"
-    response_fields = 'SECID,SHORTNAME,PREVWAPRICE,YIELDATPREVWAPRICE,PREVPRICE,FACEVALUE,MATDATE,SECNAME,CURRENCYID,' \
-                      'LISTLEVEL,OFFERDATE'
-    params = {'iss.meta': 'off', 'iss.only': 'securities',
-              'securities.columns': response_fields}
-    try:
-        r = requests.get(url=url, params=params)
-    except Exception:
-        app.logger.log('Failed to connect to MOEX')
-        return
+def send_telegram_message():
 
-    data = r.json()
-    securities = data.get('securities')
-    bonds_plane_data = None
-    if securities:
-        bonds_plane_data = securities.get('data')
-    if bonds_plane_data:
-        for bond_plane in bonds_plane_data:
-            bond = Bond(bond_plane[0], bond_plane[1], bond_plane[2], bond_plane[3], bond_plane[4], bond_plane[5],
-                        None if bond_plane[6] == "0000-00-00" else bond_plane[6],
-                        bond_plane[7], bond_plane[8], bond_plane[9], bond_plane[10])
-            try:
-                update_bond(bond)
-            except Exception as e:
-                logging.exception(e, exc_info=True)
+    bonds = Bond.query.all()
+    if not bonds:
+        message = "Something wrong, no available bonds"
     else:
-        app.logger.error('No bond data received')
+        filtered_bonds = [bond for bond in bonds if bond.offer_date is not None]
+        listing1 = [bond for bond in filtered_bonds if bond.list_level == 1 and
+                    bond.yield_at_prev_wap_price is not None and bond.yield_at_prev_wap_price < 50]
+        listing2 = [bond for bond in filtered_bonds if bond.list_level == 2 and
+                    bond.yield_at_prev_wap_price is not None and bond.yield_at_prev_wap_price < 50]
+        listing3 = [bond for bond in filtered_bonds if bond.list_level == 3 and
+                    bond.yield_at_prev_wap_price is not None and bond.yield_at_prev_wap_price < 50]
 
+        best_bond1 = max(listing1, key=attrgetter('yield_at_prev_wap_price'))
+        best_bond2 = max(listing2, key=attrgetter('yield_at_prev_wap_price'))
+        best_bond3 = max(listing3, key=attrgetter('yield_at_prev_wap_price'))
 
-def update_bond(new_bond):
-    bond_exists = db.session.query(Bond.id).filter_by(sec_id=new_bond.sec_id).first()
-    if bond_exists is None:
-        db.session.add(new_bond)
-        db.session.commit()
+        message = f'Лучший безопасный бонд это {best_bond1.short_name} ' \
+                  f'c доходностью {best_bond1.yield_at_prev_wap_price}\n' \
+                  f'Лучший сред. риск бонд это {best_bond2.short_name} ' \
+                  f'c доходностью {best_bond2.yield_at_prev_wap_price}\n' \
+                  f'Лучший опасный бонд это {best_bond3.short_name} ' \
+                  f'c доходностью {best_bond3.yield_at_prev_wap_price}'
+
+    url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
+    params = {'chat_id': '@bondiana_bonds',
+              'text': message}
+    try:
+        requests.post(url=url, params=params)
+    except Exception:
+        app.logger.log('Failed to send telegram')
         return
-    db_bond = Bond.query.filter_by(sec_id=new_bond.sec_id)
-    if new_bond == db_bond:
-        return
-    db_bond.sec_id = new_bond.sec_id
-    db_bond.short_name = new_bond.short_name
-    db_bond.prev_wap_price = new_bond.prev_wap_price
-    db_bond.yield_at_prev_wap_price = new_bond.yield_at_prev_wap_price
-    db_bond.prev_price = new_bond.prev_price
-    db_bond.face_value = new_bond.face_value
-    db_bond.mat_date = new_bond.mat_date
-    db_bond.sec_name = new_bond.sec_name
-    db_bond.currency_id = new_bond.currency_id
-    db_bond.list_level = new_bond.list_level
-    db_bond.offer_date = new_bond.offer_date
-    db.session.commit()
 
 
 while True:
-    get_moex_bond_data()
-    time.sleep(1000)
+    send_telegram_message()
+    time.sleep(2000)

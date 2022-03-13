@@ -1,4 +1,5 @@
 import datetime
+from dateutil.relativedelta import relativedelta
 
 from kubernetes import client, config
 from operator import attrgetter
@@ -21,6 +22,7 @@ db_password = base64.b64decode(secret['postgres-root-password']).decode('utf-8')
 config_map = v1.read_namespaced_config_map("bondiana-config", "bondiana").data
 db_host = config_map['databaseUrl']
 jwt_secret = str(base64.b64decode(secret['jwt']).decode('utf-8'))
+trend = str(base64.b64decode(secret['trend']).decode('utf-8'))
 
 
 def create_app(db_user, db_password, db_host):
@@ -157,10 +159,28 @@ def get_best_bond():
     bonds = Bond.query.filter_by(list_level=db_token.risk).all()
     if not bonds:
         return jsonify({'error': 'Bond db is empty'}), 404
+    start_term = datetime.datetime.now()
+    end_term = datetime.datetime.now()
+    if trend == 'UP':
+        end_term = datetime.datetime.now() + relativedelta(months=6)
+    if trend == 'FLAT':
+        start_term = datetime.datetime.now() + relativedelta(years=1)
+        end_term = datetime.datetime.now() + relativedelta(years=3)
+    if trend == 'DOWN':
+        start_term = datetime.datetime.now() + relativedelta(years=3)
+        end_term = datetime.datetime.now() + relativedelta(years=15)
+
+    bonds = [bond for bond in bonds if bond.mat_date is not None]
+
+    bonds = [bond for bond in bonds if
+             start_term < datetime.datetime.combine(bond.mat_date, datetime.datetime.min.time()) < end_term]
+
     if db_token.offer:
-        filtered_bond = [bond for bond in bonds if bond.offer_date is not None]
+        filtered_bond = [bond for bond in bonds if bond.offer_date is not None and
+                         bond.yield_at_prev_wap_price is not None and bond.yield_at_prev_wap_price < 50]
     else:
-        filtered_bond = [bond for bond in bonds if bond.offer_date is None]
+        filtered_bond = [bond for bond in bonds if bond.offer_date is None and bond.yield_at_prev_wap_price is not None
+                         and bond.yield_at_prev_wap_price < 50]
 
     best_bond = max(filtered_bond, key=attrgetter('yield_at_prev_wap_price'))
 
